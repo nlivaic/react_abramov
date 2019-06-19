@@ -3,25 +3,44 @@ import { connect } from "react-redux";
 import { withRouter } from "react-router";
 import TaskList from "./TaskList";
 import * as actions from "../actionCreators/actionCreators";
-import { getVisibleTodos } from "../reducers";
+import { getVisibleTodos, getIsFetching, getErrorMessage } from "../reducers";
+import FetchError from "./FetchError";
 
 class VisibleTaskList extends Component {
   // Fetch data from API as part of lifecycle hooks.
   componentDidMount() {
-    this.props.fetchData(this.props.filter);
+    this.fetchData(this.props.filter);
   }
 
   // Fetch data from API as part of lifecycle hooks.
   componentDidUpdate(prevProps) {
     if (prevProps.filter !== this.props.filter)
-      this.props.fetchData(this.props.filter);
+      this.fetchData(this.props.filter);
+  }
+
+  fetchData() {
+    const { filter, fetchData } = this.props;
+    fetchData(filter);
   }
 
   render() {
-    const { toggleTodo, ...rest } = this.props;
+    const { toggleTodo, todos, isFetching, errorMessage } = this.props;
+    if (isFetching && todos.length === 0) {
+      return <p>Loading...</p>;
+    }
+
+    if (errorMessage && todos.length === 0) {
+      return (
+        <FetchError
+          errorMessage={errorMessage}
+          onRetry={() => this.fetchData()}
+        />
+      );
+    }
+
     return (
       <TaskList
-        {...rest}
+        todos={todos}
         onToggleTodo={toggleTodo} // Mapped explicitly because event and action creator names differ.
       />
     );
@@ -33,6 +52,8 @@ const mapStateToProps = (state, ownProps) => {
   const filter = ownProps.match.params.filter || "all";
   return {
     todos: getVisibleTodos(state, filter),
+    isFetching: getIsFetching(state, filter),
+    errorMessage: getErrorMessage(state, filter),
     filter
   };
 };

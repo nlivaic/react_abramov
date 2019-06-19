@@ -28,6 +28,8 @@ const delay = ms =>
 
 export const fetchTodos = filter => {
   return delay(500).then(() => {
+    // This is commented out to facilitate development. It is still a relevant piece of code.
+    // if (Math.random() > 0.5) throw new Error("Boom!");
     switch (filter) {
       case "all":
         return fakeDatabase.todos;
@@ -38,5 +40,25 @@ export const fetchTodos = filter => {
       default:
         throw new Error(`Unknown filter: ${filter}`);
     }
+  });
+};
+
+export const addTodos = text => {
+  return delay(500).then(() => {
+    const todo = {
+      id: uuid(),
+      text,
+      completed: false
+    };
+    fakeDatabase.todos.push(todo);
+    return todo;
+  });
+};
+
+export const toggleTodo = id => {
+  return delay(500).then(() => {
+    const todo = fakeDatabase.todos.find(todo => todo.id === id);
+    todo.completed = !todo.completed;
+    return todo;
   });
 };
