@@ -2,7 +2,6 @@
 // It has all been moved into standalone files and components (configureStore.js and <Root />)
 import React from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
 import "bootstrap/dist/css/bootstrap.css";
 import * as serviceWorker from "./serviceWorker";
 import configureStore from "./store/configureStore";
